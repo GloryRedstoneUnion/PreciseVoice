@@ -1,0 +1,8 @@
+{
+  "command.precisevoice.error.invalid_id": "Invalid sound identifier: %s",
+  "command.precisevoice.error.unknown_sound": "Unknown sound event: %s",
+  "command.precisevoice.error.not_finite": "Volume must be a finite number",
+  "command.precisevoice.error.too_high": "Volume must not exceed %s",
+  "command.precisevoice.error.save": "Could not save PreciseVoice.json; the volume was not changed",
+  "command.precisevoice.success": "Set %s volume multiplier to %s (maximum: %s)"
+}

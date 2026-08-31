@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "precisevoice",
+  "version": "${version}",
+  "name": "PreciseVoice",
+  "description": "Fine-grained per-sound volume controls with persistent configuration.",
+  "authors": [
+    "PreciseVoice contributors"
+  ],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.minecraft.precisevoice.PreciseVoiceClient"
+    ]
+  },
+  "mixins": [
+    "precisevoice.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "fabric-api": "*",
+    "minecraft": "~1.20.1",
+    "java": ">=17"
+  }
+}

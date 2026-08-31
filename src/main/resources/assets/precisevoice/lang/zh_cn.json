@@ -1,0 +1,8 @@
+{
+  "command.precisevoice.error.invalid_id": "无效的声音事件标识符：%s",
+  "command.precisevoice.error.unknown_sound": "未知的声音事件：%s",
+  "command.precisevoice.error.not_finite": "音量必须是有限数值",
+  "command.precisevoice.error.too_high": "音量不能超过 %s",
+  "command.precisevoice.error.save": "无法保存 PreciseVoice.json，音量未更改",
+  "command.precisevoice.success": "已将 %s 的音量倍率设为 %s（上限：%s）"
+}
