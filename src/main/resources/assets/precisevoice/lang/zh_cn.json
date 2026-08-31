@@ -3,5 +3,10 @@
   "command.precisevoice.error.not_finite": "音量必须是有限数值",
   "command.precisevoice.error.too_high": "音量不能超过 %s",
   "command.precisevoice.error.save": "无法保存 PreciseVoice.json，音量未更改",
-  "command.precisevoice.success": "已将 %s 的音量倍率设为 %s（上限：%s）"
+  "command.precisevoice.success": "已将 %s 的音量倍率设为 %s（上限：%s）",
+  "command.precisevoice.success.all": "已将全部声音的音量倍率设为 %s（上限：%s）",
+  "command.precisevoice.status.header": "PreciseVoice 状态（上限：%s）",
+  "command.precisevoice.status.all": "all = %s",
+  "command.precisevoice.status.entry": "%s = %s",
+  "command.precisevoice.status.none": "尚未单独修改任何声音"
 }

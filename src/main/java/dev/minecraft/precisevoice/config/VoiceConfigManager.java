@@ -22,6 +22,7 @@ import java.util.TreeMap;
 
 public final class VoiceConfigManager {
     public static final float DEFAULT_MAX_VOLUME = 3.0F;
+    public static final float DEFAULT_ALL_VOLUME = 1.0F;
 
     private static final Logger LOGGER = LoggerFactory.getLogger("PreciseVoice/Config");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -35,7 +36,7 @@ public final class VoiceConfigManager {
     }
 
     public static VoiceConfigManager load(Path path) {
-        Snapshot defaults = new Snapshot(DEFAULT_MAX_VOLUME, Map.of());
+        Snapshot defaults = new Snapshot(DEFAULT_MAX_VOLUME, DEFAULT_ALL_VOLUME, Map.of());
         VoiceConfigManager manager = new VoiceConfigManager(path, defaults);
 
         if (Files.notExists(path)) {
@@ -62,21 +63,44 @@ public final class VoiceConfigManager {
         return snapshot.maxVolume();
     }
 
+    public float getAllMultiplier() {
+        return snapshot.allMultiplier();
+    }
+
+    public Map<String, Float> getSoundMultipliers() {
+        return snapshot.volumes();
+    }
+
     public float getMultiplier(Identifier soundId) {
-        return snapshot.volumes().getOrDefault(soundId.toString(), 1.0F);
+        Snapshot current = snapshot;
+        float soundMultiplier = current.volumes().getOrDefault(soundId.toString(), 1.0F);
+        return Math.min(current.allMultiplier() * soundMultiplier, current.maxVolume());
+    }
+
+    public synchronized void setAllMultiplier(float multiplier) throws IOException {
+        Snapshot current = snapshot;
+        validateMultiplier(multiplier, current.maxVolume());
+
+        Snapshot updated = new Snapshot(current.maxVolume(), multiplier, current.volumes());
+        write(updated);
+        snapshot = updated;
     }
 
     public synchronized void setMultiplier(Identifier soundId, float multiplier) throws IOException {
         Snapshot current = snapshot;
-        if (!Float.isFinite(multiplier) || multiplier < 0.0F || multiplier > current.maxVolume()) {
-            throw new IllegalArgumentException("Volume is outside the configured range");
-        }
+        validateMultiplier(multiplier, current.maxVolume());
 
         Map<String, Float> updatedVolumes = new TreeMap<>(current.volumes());
         updatedVolumes.put(soundId.toString(), multiplier);
-        Snapshot updated = new Snapshot(current.maxVolume(), updatedVolumes);
+        Snapshot updated = new Snapshot(current.maxVolume(), current.allMultiplier(), updatedVolumes);
         write(updated);
         snapshot = updated;
+    }
+
+    private static void validateMultiplier(float multiplier, float maxVolume) {
+        if (!Float.isFinite(multiplier) || multiplier < 0.0F || multiplier > maxVolume) {
+            throw new IllegalArgumentException("Volume is outside the configured range");
+        }
     }
 
     private static Snapshot parse(JsonElement rootElement) {
@@ -92,6 +116,14 @@ public final class VoiceConfigManager {
             throw new IllegalArgumentException("maxVolume must be a finite, non-negative number");
         }
 
+        float allMultiplier = root.has("allVolume")
+            ? root.get("allVolume").getAsFloat()
+            : DEFAULT_ALL_VOLUME;
+        if (!Float.isFinite(allMultiplier) || allMultiplier < 0.0F) {
+            throw new IllegalArgumentException("allVolume must be a finite, non-negative number");
+        }
+        allMultiplier = Math.min(allMultiplier, maxVolume);
+
         Map<String, Float> volumes = new TreeMap<>();
         if (root.has("volumes")) {
             JsonObject volumeObject = root.getAsJsonObject("volumes");
@@ -106,7 +138,7 @@ public final class VoiceConfigManager {
             }
         }
 
-        return new Snapshot(maxVolume, volumes);
+        return new Snapshot(maxVolume, allMultiplier, volumes);
     }
 
     private void write(Snapshot value) throws IOException {
@@ -117,6 +149,7 @@ public final class VoiceConfigManager {
 
         JsonObject root = new JsonObject();
         root.addProperty("maxVolume", value.maxVolume());
+        root.addProperty("allVolume", value.allMultiplier());
         JsonObject volumes = new JsonObject();
         value.volumes().forEach(volumes::addProperty);
         root.add("volumes", volumes);
@@ -138,7 +171,7 @@ public final class VoiceConfigManager {
         }
     }
 
-    private record Snapshot(float maxVolume, Map<String, Float> volumes) {
+    private record Snapshot(float maxVolume, float allMultiplier, Map<String, Float> volumes) {
         private Snapshot {
             volumes = Collections.unmodifiableMap(new TreeMap<>(volumes));
         }

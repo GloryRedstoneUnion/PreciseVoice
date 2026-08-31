@@ -3,5 +3,10 @@
   "command.precisevoice.error.not_finite": "Volume must be a finite number",
   "command.precisevoice.error.too_high": "Volume must not exceed %s",
   "command.precisevoice.error.save": "Could not save PreciseVoice.json; the volume was not changed",
-  "command.precisevoice.success": "Set %s volume multiplier to %s (maximum: %s)"
+  "command.precisevoice.success": "Set %s volume multiplier to %s (maximum: %s)",
+  "command.precisevoice.success.all": "Set the all-sound volume multiplier to %s (maximum: %s)",
+  "command.precisevoice.status.header": "PreciseVoice status (maximum: %s)",
+  "command.precisevoice.status.all": "all = %s",
+  "command.precisevoice.status.entry": "%s = %s",
+  "command.precisevoice.status.none": "No individual sound volumes have been modified"
 }
