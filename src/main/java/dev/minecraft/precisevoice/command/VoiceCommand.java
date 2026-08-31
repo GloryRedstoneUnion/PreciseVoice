@@ -2,12 +2,12 @@ package dev.minecraft.precisevoice.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.minecraft.precisevoice.PreciseVoiceClient;
 import dev.minecraft.precisevoice.config.VoiceConfigManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
@@ -29,12 +29,12 @@ public final class VoiceCommand {
         VoiceConfigManager config
     ) {
         dispatcher.register(literal("voice")
-            .then(argument("type", StringArgumentType.word())
+            .then(argument("type", IdentifierArgumentType.identifier())
                 .suggests((context, builder) -> CommandSource.suggestIdentifiers(soundIds(), builder))
                 .then(argument("volume", FloatArgumentType.floatArg(0.0F))
                     .executes(context -> setVolume(
                         context.getSource(),
-                        StringArgumentType.getString(context, "type"),
+                        context.getArgument("type", Identifier.class),
                         FloatArgumentType.getFloat(context, "volume"),
                         config
                     ))))
@@ -43,15 +43,10 @@ public final class VoiceCommand {
 
     private static int setVolume(
         FabricClientCommandSource source,
-        String rawId,
+        Identifier soundId,
         float volume,
         VoiceConfigManager config
     ) {
-        Identifier soundId = Identifier.tryParse(rawId);
-        if (soundId == null) {
-            source.sendError(Text.translatable("command.precisevoice.error.invalid_id", rawId));
-            return 0;
-        }
         if (!soundIds().contains(soundId)) {
             source.sendError(Text.translatable("command.precisevoice.error.unknown_sound", soundId));
             return 0;
