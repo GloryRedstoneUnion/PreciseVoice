@@ -59,22 +59,28 @@ public final class VoiceCommand {
             "command.precisevoice.status.header",
             Float.toString(config.getMaxVolume())
         ));
-        source.sendFeedback(Text.translatable(
-            "command.precisevoice.status.all",
-            Float.toString(config.getAllMultiplier())
-        ));
+        int modifiedOptions = 0;
+        if (config.getAllMultiplier() != VoiceConfigManager.DEFAULT_ALL_VOLUME) {
+            source.sendFeedback(Text.translatable(
+                "command.precisevoice.status.all",
+                Float.toString(config.getAllMultiplier())
+            ));
+            modifiedOptions++;
+        }
 
         Map<String, Float> soundMultipliers = config.getSoundMultipliers();
-        if (soundMultipliers.isEmpty()) {
-            source.sendFeedback(Text.translatable("command.precisevoice.status.none"));
-        } else {
+        if (!soundMultipliers.isEmpty()) {
             soundMultipliers.forEach((soundId, multiplier) -> source.sendFeedback(Text.translatable(
                 "command.precisevoice.status.entry",
                 soundId,
                 Float.toString(multiplier)
             )));
+            modifiedOptions += soundMultipliers.size();
         }
-        return soundMultipliers.size() + 1;
+        if (modifiedOptions == 0) {
+            source.sendFeedback(Text.translatable("command.precisevoice.status.none"));
+        }
+        return Math.max(modifiedOptions, 1);
     }
 
     private static int setAllVolume(

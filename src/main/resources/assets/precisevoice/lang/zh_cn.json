@@ -8,5 +8,5 @@
   "command.precisevoice.status.header": "PreciseVoice 状态（上限：%s）",
   "command.precisevoice.status.all": "all = %s",
   "command.precisevoice.status.entry": "%s = %s",
-  "command.precisevoice.status.none": "尚未单独修改任何声音"
+  "command.precisevoice.status.none": "尚未修改任何音量选项"
 }

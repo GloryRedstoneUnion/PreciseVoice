@@ -8,5 +8,5 @@
   "command.precisevoice.status.header": "PreciseVoice status (maximum: %s)",
   "command.precisevoice.status.all": "all = %s",
   "command.precisevoice.status.entry": "%s = %s",
-  "command.precisevoice.status.none": "No individual sound volumes have been modified"
+  "command.precisevoice.status.none": "No volume options have been modified"
 }

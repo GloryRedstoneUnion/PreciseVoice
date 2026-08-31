@@ -79,6 +79,35 @@ class VoiceCommandTest {
         );
     }
 
+    @Test
+    void statusOmitsDefaultVolumeOptions() throws Exception {
+        VoiceConfigManager config = VoiceConfigManager.load(
+            temporaryDirectory.resolve("PreciseVoice.json")
+        );
+        config.setMultiplier(new Identifier("minecraft:entity.generic.explode"), 0.2F);
+        config.setMultiplier(new Identifier("minecraft:entity.villager.no"), 1.0F);
+        List<Text> feedback = new ArrayList<>();
+        FabricClientCommandSource source = recordingSource(feedback);
+        CommandDispatcher<FabricClientCommandSource> dispatcher = new CommandDispatcher<>();
+        VoiceCommand.register(dispatcher, config);
+
+        int result = dispatcher.execute("voice status", source);
+
+        assertEquals(1, result);
+        assertEquals(2, feedback.size());
+        assertTranslation(
+            feedback.get(0),
+            "command.precisevoice.status.header",
+            "3.0"
+        );
+        assertTranslation(
+            feedback.get(1),
+            "command.precisevoice.status.entry",
+            "minecraft:entity.generic.explode",
+            "0.2"
+        );
+    }
+
     private static void assertParses(String command) {
         CommandDispatcher<FabricClientCommandSource> dispatcher = new CommandDispatcher<>();
         VoiceCommand.register(dispatcher, null);

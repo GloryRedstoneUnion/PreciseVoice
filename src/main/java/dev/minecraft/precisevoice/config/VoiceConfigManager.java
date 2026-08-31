@@ -23,6 +23,7 @@ import java.util.TreeMap;
 public final class VoiceConfigManager {
     public static final float DEFAULT_MAX_VOLUME = 3.0F;
     public static final float DEFAULT_ALL_VOLUME = 1.0F;
+    public static final float DEFAULT_SOUND_VOLUME = 1.0F;
 
     private static final Logger LOGGER = LoggerFactory.getLogger("PreciseVoice/Config");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -73,7 +74,10 @@ public final class VoiceConfigManager {
 
     public float getMultiplier(Identifier soundId) {
         Snapshot current = snapshot;
-        float soundMultiplier = current.volumes().getOrDefault(soundId.toString(), 1.0F);
+        float soundMultiplier = current.volumes().getOrDefault(
+            soundId.toString(),
+            DEFAULT_SOUND_VOLUME
+        );
         return Math.min(current.allMultiplier() * soundMultiplier, current.maxVolume());
     }
 
@@ -91,7 +95,11 @@ public final class VoiceConfigManager {
         validateMultiplier(multiplier, current.maxVolume());
 
         Map<String, Float> updatedVolumes = new TreeMap<>(current.volumes());
-        updatedVolumes.put(soundId.toString(), multiplier);
+        if (multiplier == DEFAULT_SOUND_VOLUME) {
+            updatedVolumes.remove(soundId.toString());
+        } else {
+            updatedVolumes.put(soundId.toString(), multiplier);
+        }
         Snapshot updated = new Snapshot(current.maxVolume(), current.allMultiplier(), updatedVolumes);
         write(updated);
         snapshot = updated;
@@ -132,6 +140,9 @@ public final class VoiceConfigManager {
                 float volume = entry.getValue().getAsFloat();
                 if (id == null || !Float.isFinite(volume) || volume < 0.0F) {
                     LOGGER.warn("Ignoring invalid volume entry {}", entry.getKey());
+                    continue;
+                }
+                if (volume == DEFAULT_SOUND_VOLUME) {
                     continue;
                 }
                 volumes.put(id.toString(), Math.min(volume, maxVolume));

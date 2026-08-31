@@ -19,6 +19,7 @@ multiplier to every sound event identifier.
 - `all` applies an overall multiplier to every sound. It is multiplied by any
   per-sound value, with the final result capped at `maxVolume`.
 - `status` shows the current `all` value and every individually modified sound.
+  Options at their default multiplier of `1.0` are omitted.
 
 The configuration is saved as `PreciseVoice.json` in the game instance root:
 

@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -38,6 +39,44 @@ class VoiceConfigManagerTest {
         VoiceConfigManager reloaded = VoiceConfigManager.load(path);
 
         assertEquals(2.25F, reloaded.getMultiplier(soundId));
+    }
+
+    @Test
+    void settingDefaultSoundVolumeRemovesOverride() throws IOException {
+        Path path = temporaryDirectory.resolve("PreciseVoice.json");
+        Identifier soundId = new Identifier("minecraft:entity.villager.no");
+        VoiceConfigManager config = VoiceConfigManager.load(path);
+
+        config.setMultiplier(soundId, 0.2F);
+        config.setMultiplier(soundId, 1.0F);
+        VoiceConfigManager reloaded = VoiceConfigManager.load(path);
+
+        assertTrue(reloaded.getSoundMultipliers().isEmpty());
+        assertEquals(1.0F, reloaded.getMultiplier(soundId));
+        assertTrue(Files.readString(path).contains("\"volumes\": {}"));
+    }
+
+    @Test
+    void loadingLegacyConfigRemovesDefaultSoundOverrides() throws IOException {
+        Path path = temporaryDirectory.resolve("PreciseVoice.json");
+        Files.writeString(path, """
+            {
+              "maxVolume": 3.0,
+              "allVolume": 1.0,
+              "volumes": {
+                "minecraft:entity.generic.explode": 0.2,
+                "minecraft:entity.villager.no": 1.0
+              }
+            }
+            """);
+
+        VoiceConfigManager config = VoiceConfigManager.load(path);
+
+        assertEquals(1, config.getSoundMultipliers().size());
+        assertEquals(0.2F, config.getSoundMultipliers().get(
+            "minecraft:entity.generic.explode"
+        ));
+        assertFalse(Files.readString(path).contains("minecraft:entity.villager.no"));
     }
 
     @Test
