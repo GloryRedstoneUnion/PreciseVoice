@@ -5,6 +5,7 @@
   "command.precisevoice.error.save": "无法保存 PreciseVoice.json，音量未更改",
   "command.precisevoice.success": "已将 %s 的音量倍率设为 %s（上限：%s）",
   "command.precisevoice.success.all": "已将全部声音的音量倍率设为 %s（上限：%s）",
+  "command.precisevoice.success.resetall": "已将所有音量设置恢复为默认值",
   "command.precisevoice.status.header": "PreciseVoice 状态（上限：%s）",
   "command.precisevoice.status.all": "all = %s",
   "command.precisevoice.status.entry": "%s = %s",

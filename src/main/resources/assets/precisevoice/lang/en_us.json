@@ -5,6 +5,7 @@
   "command.precisevoice.error.save": "Could not save PreciseVoice.json; the volume was not changed",
   "command.precisevoice.success": "Set %s volume multiplier to %s (maximum: %s)",
   "command.precisevoice.success.all": "Set the all-sound volume multiplier to %s (maximum: %s)",
+  "command.precisevoice.success.resetall": "Reset all volume settings to their defaults",
   "command.precisevoice.status.header": "PreciseVoice status (maximum: %s)",
   "command.precisevoice.status.all": "all = %s",
   "command.precisevoice.status.entry": "%s = %s",

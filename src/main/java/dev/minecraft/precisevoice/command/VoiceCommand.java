@@ -32,6 +32,8 @@ public final class VoiceCommand {
         dispatcher.register(literal("voice")
             .then(literal("status")
                 .executes(context -> showStatus(context.getSource(), config)))
+            .then(literal("resetall")
+                .executes(context -> resetAll(context.getSource(), config)))
             .then(literal("all")
                 .then(argument("volume", FloatArgumentType.floatArg(0.0F))
                     .executes(context -> setAllVolume(
@@ -81,6 +83,23 @@ public final class VoiceCommand {
             source.sendFeedback(Text.translatable("command.precisevoice.status.none"));
         }
         return Math.max(modifiedOptions, 1);
+    }
+
+    private static int resetAll(
+        FabricClientCommandSource source,
+        VoiceConfigManager config
+    ) {
+        try {
+            config.resetAll();
+        } catch (IOException exception) {
+            PreciseVoiceClient.LOGGER.error("Could not persist reset of all volume settings", exception);
+            source.sendError(Text.translatable("command.precisevoice.error.save"));
+            return 0;
+        }
+
+        refreshPlayingSounds();
+        source.sendFeedback(Text.translatable("command.precisevoice.success.resetall"));
+        return 1;
     }
 
     private static int setAllVolume(
@@ -171,6 +190,9 @@ public final class VoiceCommand {
 
     private static void refreshPlayingSounds() {
         MinecraftClient client = MinecraftClient.getInstance();
+        if (client == null) {
+            return;
+        }
         float blockVolume = client.options.getSoundVolume(SoundCategory.BLOCKS);
         client.getSoundManager().updateSoundVolume(SoundCategory.BLOCKS, blockVolume);
     }

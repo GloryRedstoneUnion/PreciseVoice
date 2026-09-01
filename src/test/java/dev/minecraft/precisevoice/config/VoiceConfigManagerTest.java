@@ -99,6 +99,31 @@ class VoiceConfigManagerTest {
     }
 
     @Test
+    void resetAllRestoresDefaultsAndPreservesMaximum() throws IOException {
+        Path path = temporaryDirectory.resolve("PreciseVoice.json");
+        Identifier soundId = new Identifier("minecraft:entity.creeper.primed");
+        Files.writeString(path, """
+            {
+              "maxVolume": 2.5,
+              "allVolume": 0.5,
+              "volumes": {
+                "minecraft:entity.creeper.primed": 2.0
+              }
+            }
+            """);
+
+        VoiceConfigManager config = VoiceConfigManager.load(path);
+        config.resetAll();
+        VoiceConfigManager reloaded = VoiceConfigManager.load(path);
+
+        assertEquals(2.5F, reloaded.getMaxVolume());
+        assertEquals(1.0F, reloaded.getAllMultiplier());
+        assertTrue(reloaded.getSoundMultipliers().isEmpty());
+        assertEquals(1.0F, reloaded.getMultiplier(soundId));
+        assertTrue(Files.readString(path).contains("\"volumes\": {}"));
+    }
+
+    @Test
     void clampsStoredValuesWhenMaximumIsLowered() throws IOException {
         Path path = temporaryDirectory.resolve("PreciseVoice.json");
         Files.writeString(path, """

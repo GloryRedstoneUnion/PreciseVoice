@@ -105,6 +105,16 @@ public final class VoiceConfigManager {
         snapshot = updated;
     }
 
+    /**
+     * Restores every volume setting to its default while preserving the configured maximum.
+     */
+    public synchronized void resetAll() throws IOException {
+        Snapshot current = snapshot;
+        Snapshot updated = new Snapshot(current.maxVolume(), DEFAULT_ALL_VOLUME, Map.of());
+        write(updated);
+        snapshot = updated;
+    }
+
     private static void validateMultiplier(float multiplier, float maxVolume) {
         if (!Float.isFinite(multiplier) || multiplier < 0.0F || multiplier > maxVolume) {
             throw new IllegalArgumentException("Volume is outside the configured range");

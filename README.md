@@ -25,6 +25,7 @@ PreciseVoice is client-only and does not need to be installed on a server.
 /voice <type> <volume>
 /voice all <volume>
 /voice status
+/voice resetall
 ```
 
 - `type` is a sound event identifier such as `minecraft:block.chest.open`.
@@ -37,6 +38,9 @@ PreciseVoice is client-only and does not need to be installed on a server.
   per-sound value, with the final result capped at `maxVolume`.
 - `status` shows only volume options that differ from their default multiplier
   of `1.0`.
+- `resetall` restores the overall multiplier and every per-sound multiplier to
+  `1.0`, clearing all per-sound overrides from the configuration file. The
+  configured `maxVolume` is preserved.
 - Setting an individual sound or `all` to `1.0` resets that option. Individual
   sound overrides reset this way are removed from the configuration file.
 

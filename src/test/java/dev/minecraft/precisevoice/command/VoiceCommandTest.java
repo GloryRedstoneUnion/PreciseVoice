@@ -46,6 +46,11 @@ class VoiceCommandTest {
     }
 
     @Test
+    void parsesResetAllWithoutVolume() {
+        assertParses("voice resetall");
+    }
+
+    @Test
     void statusListsAllAndIndividualSoundVolumes() throws Exception {
         VoiceConfigManager config = VoiceConfigManager.load(
             temporaryDirectory.resolve("PreciseVoice.json")
@@ -106,6 +111,28 @@ class VoiceCommandTest {
             "minecraft:entity.generic.explode",
             "0.2"
         );
+    }
+
+    @Test
+    void resetAllRestoresDefaultsAndClearsOverrides() throws Exception {
+        VoiceConfigManager config = VoiceConfigManager.load(
+            temporaryDirectory.resolve("PreciseVoice.json")
+        );
+        config.setAllMultiplier(0.5F);
+        config.setMultiplier(new Identifier("minecraft:entity.generic.explode"), 2.0F);
+        List<Text> feedback = new ArrayList<>();
+        FabricClientCommandSource source = recordingSource(feedback);
+        CommandDispatcher<FabricClientCommandSource> dispatcher = new CommandDispatcher<>();
+        VoiceCommand.register(dispatcher, config);
+
+        int result = dispatcher.execute("voice resetall", source);
+
+        assertEquals(1, result);
+        assertEquals(1.0F, config.getAllMultiplier());
+        assertTrue(config.getSoundMultipliers().isEmpty());
+        assertEquals(1.0F, config.getMultiplier(new Identifier("minecraft:entity.generic.explode")));
+        assertEquals(1, feedback.size());
+        assertTranslation(feedback.get(0), "command.precisevoice.success.resetall");
     }
 
     private static void assertParses(String command) {
