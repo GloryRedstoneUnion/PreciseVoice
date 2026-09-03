@@ -19,6 +19,9 @@ fine-grained, persistent volume controls for individual sound events.
 
 PreciseVoice is client-only and does not need to be installed on a server.
 
+Current maintenance context is documented in the
+[handoff document](HANDOFF.md).
+
 ## Commands
 
 ```text
